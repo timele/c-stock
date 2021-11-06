@@ -1,0 +1,9 @@
+fail_fast: false
+repos:
+  - repo: https://github.com/pocc/pre-commit-hooks
+    rev: v1.3.4
+    hooks:
+      # - id: clang-format
+        # args: [--verbose=0]
+      # - id: cppcheck
+      - id: cpplint

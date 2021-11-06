@@ -1,0 +1,16 @@
+backports.entry-points-selectable==1.1.0
+cfgv==3.3.1
+clang==11.0
+clang-format==13.0.0
+cpplint==1.5.5
+distlib==0.3.3
+filelock==3.3.0
+identify==2.3.0
+lcov-cobertura==1.6
+nodeenv==1.6.0
+platformdirs==2.4.0
+pre-commit==2.15.0
+PyYAML==5.4.1
+six==1.16.0
+toml==0.10.2
+virtualenv==20.8.1

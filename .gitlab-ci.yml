@@ -1,0 +1,58 @@
+stages:
+  - Build
+  - Sonar
+cache:
+  key: ${CI_COMMIT_REF_SLUG}
+  paths:
+    - ./.venv       # virtual environment
+    - ./.cache/pip  # pip caches
+
+variables:
+  # Shallow cloning needs to be disabled.
+  # See https://docs.sonarqube.org/latest/analysis/gitlab-cicd/.
+  GIT_DEPTH: 0
+build:
+  stage: Build
+  image: 192.168.0.4:5050/rnd/gcc-cmake-python-poco:latest
+  variables:
+  before_script:
+    - pwd
+    - apt install lcov -y
+    - python3 -m venv .venv
+    - source .venv/bin/activate
+    - pip install --upgrade pip
+    - pip install -r requirements.txt
+    - pwd
+  script:
+    - mkdir .build
+    - cd .build
+    - cmake .. -DCMAKE_BUILD_TYPE=Debug
+    - cmake --build .
+    - make test
+    - make coverage
+    - python ../.venv/lib/python3.9/site-packages/lcov_cobertura.py -b /builds/hax/quantbox/ coverage.info
+  artifacts:
+    paths:
+      - .build/coverage.xml
+
+######################### Quality Assurance
+sonar:
+  stage: Sonar
+  needs: ["build"]
+  dependencies:
+    - build
+  image:
+    name: sonarsource/sonar-scanner-cli:latest
+    entrypoint: [""]
+  variables:
+    # Defines the location of the analysis task cache
+    SONAR_USER_HOME: "$CI_PROJECT_DIR/.sonar"
+  cache:
+    key: "$CI_JOB_NAME"
+    paths:
+      - .sonar/cache
+  script:
+    - sonar-scanner -X
+  allow_failure: false
+  only:
+    - main
